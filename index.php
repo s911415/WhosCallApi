@@ -2,11 +2,13 @@
 ob_start();
 require('functions.php');
 header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: POST, OPTIONS');
+header('Access-Control-Allow-Methods: POST, GET, OPTIONS');
 $method = $_SERVER['REQUEST_METHOD'];
 
-if($method !== 'POST' && $method !== 'GET') die;
- header('Content-Type: application/json');
+if($method === 'OPTIONS') die;
+if($method !== 'POST' && $method !== 'GET') showError(405);
+
+header('Content-Type: application/json');
 $path = ltrim(mb_substr($_SERVER['REQUEST_URI'], mb_strrpos($_SERVER['PHP_SELF'], '/')), '/');
 
 
@@ -61,18 +63,18 @@ $output = [
         'raw' => getPlainTextOrDefault($subInfo),
         'telephone' => getAttributeOrDefault($subInfo('span[itemprop="telephone"]', 0), 'content', 'N/A'),
     ],
-    'openHours' => [
-        'currentStatus' => getPlainTextOrDefault($openHours('h2.sub-title', 0)),
-        'today' => getTimesFromList($openHours('span.today__text', 0)),
-        'all' => $allOpenHourList,
-    ],
     'location' => [
         'lng' => getAttributeOrDefault($map, 'data-lng'),
         'lat' => getAttributeOrDefault($map, 'data-lat'),
         'address' => getAttributeOrDefault($map, 'data-address'),
         'geoCoding' => getAttributeOrDefault($map, 'data-geocoding'),
         'countryCode' => getAttributeOrDefault($map, 'data-country_code'),
-    ]
+    ],
+    'openHours' => [
+        'currentStatus' => getPlainTextOrDefault($openHours('h2.sub-title', 0)),
+        'today' => getTimesFromList($openHours('span.today__text', 0)),
+        'all' => $allOpenHourList,
+    ],
 ];
-echo json_encode($output, JSON_UNESCAPED_UNICODE);
+echo json_encode(['success' => true, 'result' => $output], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
 
