@@ -6,7 +6,7 @@ header('Access-Control-Allow-Methods: POST, OPTIONS');
 $method = $_SERVER['REQUEST_METHOD'];
 
 if($method !== 'POST' && $method !== 'GET') die;
- header('Content-Type:: application/json');
+ header('Content-Type: application/json');
 $path = ltrim(mb_substr($_SERVER['REQUEST_URI'], mb_strrpos($_SERVER['PHP_SELF'], '/')), '/');
 
 
